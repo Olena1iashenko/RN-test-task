@@ -1,26 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { View, Text } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDispatch, useSelector } from "react-redux";
 import { createStackNavigator } from "@react-navigation/stack";
 import AuthScreen from "./components/AuthScreen";
 import MainTabs from "./components/MainTabs";
-import { useAppSelector, useAppDispatch } from "./redux/hooks";
+import { login } from "./redux/slices/authSlice";
+import { RootState } from "./redux/store";
 
 const Stack = createStackNavigator();
 
 const App = () => {
-  const dispatch = useAppDispatch();
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  const dispatch = useDispatch();
+  const isLoggedIn = useSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
 
   useEffect(() => {
     const checkAuth = async () => {
       const status = await AsyncStorage.getItem("isLoggedIn");
-      setIsLoggedIn(status === "true");
     };
     checkAuth();
   }, [dispatch]);
 
   if (isLoggedIn === null) {
-    return null; // You can add a splash screen here
+    return null; // Optionally, you can add a loading spinner here
   }
 
   return (
